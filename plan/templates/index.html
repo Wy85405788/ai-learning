@@ -1,0 +1,112 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 学习进度看板</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 AI 应用开发 8 周计划</h1>
+        <div class="stats">
+            <div>共 {{ plan|length }} 天计划</div>
+            <div class="overall">整体进度: <strong>{{ "%.1f"|format(overall_percent) }}%</strong></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>周/天</th>
+                    <th>主题</th>
+                    <th>任务</th>
+                    <th>进度</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in plan %}
+                <tr class="{% if item.is_today %}today{% endif %}">
+                    <td>{{ item.Date }}</td>
+                    <td>W{{ item.Week }}-D{{ item.Day }}</td>
+                    <td>{{ item.Topic }}</td>
+                    <td>{{ item.Task }}</td>
+                    <td>
+                        <input type="range" min="0" max="100" value="{{ item.progress }}"
+                           oninput="handleSliderInput(this, '{{ item.Date }}')"
+                           onchange="updateProgress('{{ item.Date }}', this.value, getNote('{{ item.Date }}'))"
+                           class="progress-slider">
+                        <span class="progress-percent" id="percent-{{ item.Date }}">{{ item.progress }}%</span>
+                    </td>
+                    <td>
+                        <input type="text" placeholder="备注..."
+                               value="{{ item.note }}"
+                               onblur="updateProgress('{{ item.Date }}', getSlider('{{ item.Date }}').value, this.value)"
+                               class="note-input">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 在页面加载时，从表格中提取所有任务的初始进度
+        const allProgress = {};
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const date = row.cells[0].textContent; // 第一列是日期
+            const percentText = row.querySelector('.progress-percent').textContent;
+            const value = parseInt(percentText) || 0;
+            allProgress[date] = value;
+        });
+
+        // 计算并更新整体进度显示
+        function updateOverallProgress() {
+            const values = Object.values(allProgress);
+            if (values.length === 0) return;
+            const total = values.reduce((sum, v) => sum + v, 0);
+            const avg = total / values.length;
+            document.querySelector('.overall strong').textContent = avg.toFixed(1) + '%';
+        }
+        function getSlider(date) {
+            return document.querySelector(`input[type='range'][onchange*='${date}']`);
+        }
+        function getNote(date) {
+            return document.querySelector(`input[type='text'][onblur*='${date}']`).value;
+        }
+
+        function handleSliderInput(slider, date) {
+            const value = parseInt(slider.value);
+
+            // 1. 更新内存中的进度
+            allProgress[date] = value;
+
+            // 2. 更新当前行的百分比显示
+            const percentSpan = document.getElementById('percent-' + date);
+            if (percentSpan) {
+                percentSpan.textContent = value + '%';
+            }
+
+            // 3. ✅ 实时更新顶部的整体进度
+            updateOverallProgress();
+        }
+
+        // 原有的保存函数不变（松手后才持久化）
+        async function updateProgress(date, value, note) {
+            await fetch('/update_progress', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({date, value, note})
+            });
+        }
+
+        // 页面加载后更新所有百分比显示
+        document.querySelectorAll('.progress-slider').forEach(slider => {
+            const percentSpan = slider.nextElementSibling;
+            percentSpan.textContent = slider.value + '%';
+        });
+    </script>
+</body>
+</html>

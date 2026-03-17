@@ -24,6 +24,8 @@
                     <th>任务</th>
                     <th>进度</th>
                     <th>备注</th>
+                    <th>任务说明</th>   <!-- 新增 -->
+                    <th>代码</th>       <!-- 新增 -->
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +47,16 @@
                                value="{{ item.note }}"
                                onblur="updateProgress('{{ item.Date }}', getSlider('{{ item.Date }}').value, this.value)"
                                class="note-input">
+                    </td>
+                    <td>
+                        {% if item.TaskLink %}
+                            <a href="{{ item.TaskLink }}" target="_blank" class="link-btn">📄 任务</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.CodeLink %}
+                            <a href="{{ item.CodeLink }}" target="_blank" class="link-btn">💻 代码</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

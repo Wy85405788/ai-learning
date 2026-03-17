@@ -81,3 +81,16 @@ th {
         font-weight: bold;
     }
 }
+.link-btn {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f1f5f9;
+    color: #3b82f6;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9em;
+    transition: background 0.2s;
+}
+.link-btn:hover {
+    background: #e0e7ff;
+}

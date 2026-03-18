@@ -1,0 +1,29 @@
+ChatCompletion(
+    id='chatcmpl-54e7059d-2950-9ae7-b682-e54fd928be73',
+    choices=[
+        Choice(
+            finish_reason='stop',
+            index=0,
+            logprobs=None,
+            message=ChatCompletionMessage(
+                content='{\n  "description": "实现用户登录接口的 JWT 认证逻辑，包括生成和验证 token",\n  "priority": "高",\n  "estimated_hours": 3\n}',
+                refusal=None,
+                role='assistant',
+                annotations=None,
+                audio=None,
+                function_call=None,
+                tool_calls=None)
+        )
+    ],
+    created=1773820937,
+    model='qwen3-max-2026-01-23',
+    object='chat.completion',
+    service_tier=None,
+    system_fingerprint=None,
+    usage=CompletionUsage(
+        completion_tokens=39,
+        prompt_tokens=122,
+        total_tokens=161,
+        completion_tokens_details=None,
+        prompt_tokens_details=None)
+)
